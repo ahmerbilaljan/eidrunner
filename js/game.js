@@ -5,9 +5,9 @@ const timeEl = document.getElementById('time-text');
 const startScreen = document.getElementById('start-screen');
 const startBtn = document.getElementById('start-btn');
 
-const WIDTH = canvas.width;
-const HEIGHT = canvas.height;
-const GROUND_Y = HEIGHT - 40;
+let WIDTH = canvas.width;
+let HEIGHT = canvas.height;
+let GROUND_Y = HEIGHT - 40;
 
 // Game State
 let isPlaying = false;
@@ -489,3 +489,28 @@ function gameLoop(time) {
 
     animationFrameId = requestAnimationFrame(gameLoop);
 }
+
+function resizeCanvas() {
+    const container = document.getElementById('game-container');
+    const rect = container.getBoundingClientRect();
+
+    // Set actual canvas resolution to match its container's screen size
+    canvas.width = rect.width || window.innerWidth;
+    canvas.height = rect.height || window.innerHeight;
+
+    WIDTH = canvas.width;
+    HEIGHT = canvas.height;
+    GROUND_Y = HEIGHT - 40;
+
+    // Safety check so player doesn't fall through ground if resize happens during play
+    if (player) {
+        if (player.isGrounded) {
+            player.y = GROUND_Y - player.height;
+        } else if (player.y + player.height > GROUND_Y) {
+            player.y = GROUND_Y - player.height;
+        }
+    }
+}
+
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
