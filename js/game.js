@@ -302,6 +302,7 @@ function spawnParticles(x, y, count, color) {
 
 let timeAccumulator = 0;
 let nextPillarDist = 400;
+let nextCoinDist = 200;
 
 function initGame() {
     if (animationFrameId) cancelAnimationFrame(animationFrameId);
@@ -322,11 +323,19 @@ function initGame() {
     isGameOver = false;
     isPlaying = true;
     timeAccumulator = 0;
-    nextPillarDist = 600;
+    nextPillarDist = 2700; // About 7 seconds delay
+    nextCoinDist = 200;
     groundOffset = 0;
 
     for (let i = 0; i < 6; i++) {
         clouds.push(new Cloud(Math.random() * WIDTH));
+    }
+
+    // Initial starting coins inside a nice wave pattern
+    for (let i = 0; i < 5; i++) {
+        const cx = 350 + (i * 120);
+        const cy = GROUND_Y - 40 - Math.abs(Math.sin(i * 0.8)) * 80;
+        coins.push(new Coin(cx, cy));
     }
 
     startScreen.classList.remove('is-end');
@@ -375,15 +384,36 @@ function update(dt) {
         const pillar = new Pillar(WIDTH + 50);
         pillars.push(pillar);
 
-        nextPillarDist = 280 + Math.random() * 320;
+        nextPillarDist = 300 + Math.random() * 300;
 
-        if (Math.random() > 0.3) {
+        // Keep a few coins spawning above the pillars
+        if (Math.random() > 0.4) {
             const coinY = pillar.y - 45 - Math.random() * 70;
             coins.push(new Coin(WIDTH + 80, coinY));
+        }
+    }
 
-            if (Math.random() > 0.4) {
-                coins.push(new Coin(WIDTH + 140, coinY));
+    // Independent coin spawning everywhere (including ground)
+    nextCoinDist -= gameSpeed;
+    if (nextCoinDist <= 0) {
+        // Spawns coins between ground level and jump peak
+        const coinY = GROUND_Y - 30 - Math.random() * 110;
+        const coinX = WIDTH + 50;
+        
+        // Ensure coin doesn't spawn inside or too close to a pillar horizontally
+        let overlaps = false;
+        for (let p of pillars) {
+            if (coinX > p.x - 40 && coinX < p.x + p.width + 40) {
+                overlaps = true;
+                break;
             }
+        }
+        
+        if (!overlaps) {
+            coins.push(new Coin(coinX, coinY));
+            nextCoinDist = 180 + Math.random() * 250;
+        } else {
+            nextCoinDist = 40; // Retry quickly if blocked by pillar
         }
     }
 
