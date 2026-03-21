@@ -9,6 +9,8 @@ let WIDTH = canvas.width;
 let HEIGHT = canvas.height;
 let GROUND_Y = HEIGHT - 40;
 
+let isMobileMode = false;
+
 // Game State
 let isPlaying = false;
 let isGameOver = false;
@@ -161,8 +163,15 @@ class Player {
 class Pillar {
     constructor(x) {
         this.x = x;
-        this.width = 76; // Increased width for the Mario-pipe style proportion
-        this.height = 50 + Math.random() * 120;
+        
+        if (isMobileMode) {
+            this.width = 56; // Thinner for mobile screens
+            this.height = 40 + Math.random() * 80; // Shorter vertical height
+        } else {
+            this.width = 76; // Original desktop width
+            this.height = 50 + Math.random() * 120; // Original desktop height
+        }
+        
         this.y = GROUND_Y - this.height;
     }
 
@@ -387,7 +396,12 @@ function update(dt) {
         const pillar = new Pillar(WIDTH + 50);
         pillars.push(pillar);
 
-        nextPillarDist = 300 + Math.random() * 300;
+        // Increase gap on mobile so it doesn't feel as fast/dense
+        if (isMobileMode) {
+            nextPillarDist = 450 + Math.random() * 400;
+        } else {
+            nextPillarDist = 300 + Math.random() * 300;
+        }
 
         // Keep a few coins spawning above the pillars
         if (Math.random() > 0.4) {
@@ -567,8 +581,8 @@ function resizeCanvas() {
     HEIGHT = canvas.height;
     
     // Elevate ground level on mobile to make it comfortable to tap and view
-    const isMobile = window.innerWidth <= 600 || ('ontouchstart' in window) || HEIGHT > WIDTH;
-    if (isMobile) {
+    isMobileMode = window.innerWidth <= 600 || ('ontouchstart' in window) || HEIGHT > WIDTH;
+    if (isMobileMode) {
         GROUND_Y = HEIGHT * 0.70; // 30% from the bottom
     } else {
         GROUND_Y = HEIGHT - 40; // normal desktop ground
