@@ -165,8 +165,8 @@ class Pillar {
         this.x = x;
         
         if (isMobileMode) {
-            this.width = 56; // Thinner for mobile screens
-            this.height = 40 + Math.random() * 80; // Shorter vertical height
+            this.width = 62; // Precisely 18% thinner for mobile (76 * 0.82)
+            this.height = 41 + Math.random() * 98; // Precisely 18% shorter vertically
         } else {
             this.width = 76; // Original desktop width
             this.height = 50 + Math.random() * 120; // Original desktop height
@@ -210,7 +210,7 @@ class Coin {
     constructor(x, y) {
         this.x = x;
         this.y = y;
-        this.radius = 13;
+        this.radius = isMobileMode ? 10.5 : 13; // 18% smaller on mobile
         this.collected = false;
         this.hover = Math.random() * Math.PI * 2;
     }
@@ -240,7 +240,7 @@ class Coin {
         ctx.fill();
 
         ctx.fillStyle = '#C28300';
-        ctx.font = '900 13px Montserrat';
+        ctx.font = isMobileMode ? '900 10.5px Montserrat' : '900 13px Montserrat';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText('E', this.x, drawY + 1);
