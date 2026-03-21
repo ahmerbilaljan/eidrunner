@@ -120,6 +120,22 @@
             text-shadow: 4px 4px 0 navy, 6px 6px 0 rgba(0, 0, 0, 0.6);
             letter-spacing: 2px;
             line-height: 1.1;
+            transition: all 0.3s ease;
+        }
+
+        #start-screen.is-end h1 {
+            font-size: 57px;
+            margin-bottom: 5px;
+        }
+
+        #end-msg {
+            display: none;
+            font-size: 42px;
+            font-weight: 900;
+            margin: 10px 0 0 0;
+            text-transform: uppercase;
+            text-shadow: 2px 2px 0 navy, 4px 4px 0 rgba(0, 0, 0, 0.6);
+            line-height: 1.1;
         }
 
         #start-screen p {
@@ -171,6 +187,15 @@
                 text-shadow: 2px 2px 0 navy;
             }
 
+            #start-screen.is-end h1 {
+                font-size: 29px;
+            }
+
+            #end-msg {
+                font-size: 26px;
+                margin-top: 5px;
+            }
+
             #start-screen p {
                 font-size: 13px;
                 margin: 12px 0;
@@ -211,10 +236,12 @@
         <div id="start-screen">
             <img src="imgs/eidi.png" alt="Eidi Logo" id="title-img">
             <h1>RUNNER</h1>
+            <h2 id="end-msg"></h2>
             <p>
                 Press [SPACE] or TAP to Jump.<br>
+                Double Tap to Double Jump.<br>
                 Avoid Pillars. Collect Eidi.<br>
-                Run as far as you can!
+                Run as far as you can! <br>
             </p>
             <button id="start-btn">PLAY GAME</button>
         </div>

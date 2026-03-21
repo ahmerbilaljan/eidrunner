@@ -158,8 +158,8 @@ class Player {
 class Pillar {
     constructor(x) {
         this.x = x;
-        this.width = 64;
-        this.height = 40 + Math.random() * 120;
+        this.width = 76; // Increased width for the Mario-pipe style proportion
+        this.height = 50 + Math.random() * 120;
         this.y = GROUND_Y - this.height;
     }
 
@@ -168,22 +168,29 @@ class Pillar {
     }
 
     draw() {
-        ctx.fillStyle = 'navy';
-        if (ctx.roundRect) {
-            ctx.beginPath();
-            ctx.roundRect(this.x, this.y, this.width, this.height, [8, 8, 0, 0]);
-            ctx.fill();
-            ctx.lineWidth = 4;
-            ctx.strokeStyle = 'yellow';
-            ctx.stroke();
-        } else {
-            ctx.fillRect(this.x, this.y, this.width, this.height);
-            ctx.lineWidth = 4;
-            ctx.strokeStyle = 'yellow';
-            ctx.strokeRect(this.x, this.y, this.width, this.height);
-        }
-        ctx.fillStyle = 'navy';
-        ctx.fillRect(this.x + 4, this.y + this.height - 4, this.width - 8, 4);
+        const topHeight = 24; // The lip of the pipe
+        const baseX = this.x + 8;
+        const baseWidth = this.width - 16;
+
+        ctx.lineWidth = 4;
+        ctx.strokeStyle = '#FFDA03'; // Vibrant yellow border
+
+        // Main pillar base
+        ctx.fillStyle = '#102B84'; // Dark navy
+        const baseHeight = this.height - topHeight + 50; // Extend downwards
+        ctx.fillRect(baseX, this.y + topHeight, baseWidth, baseHeight);
+
+        // Base strokes (Left and Right only)
+        ctx.beginPath();
+        ctx.moveTo(baseX, this.y + topHeight);
+        ctx.lineTo(baseX, this.y + topHeight + baseHeight);
+        ctx.moveTo(baseX + baseWidth, this.y + topHeight);
+        ctx.lineTo(baseX + baseWidth, this.y + topHeight + baseHeight);
+        ctx.stroke();
+
+        // Top lip (Rectangle with full border)
+        ctx.fillRect(this.x, this.y, this.width, topHeight);
+        ctx.strokeRect(this.x, this.y, this.width, topHeight);
     }
 }
 
@@ -239,11 +246,22 @@ class Cloud {
         this.x -= this.speed;
     }
     draw() {
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+        ctx.fillStyle = '#62CDF9'; // Flat light blue to match image
         ctx.beginPath();
-        ctx.arc(this.x, this.y, 30 * this.scale, 0, Math.PI * 2);
-        ctx.arc(this.x + 35 * this.scale, this.y - 15 * this.scale, 25 * this.scale, 0, Math.PI * 2);
-        ctx.arc(this.x + 70 * this.scale, this.y, 30 * this.scale, 0, Math.PI * 2);
+        const bottomY = this.y + 15 * this.scale;
+
+        ctx.moveTo(this.x - 30 * this.scale, bottomY);
+
+        // left bump
+        ctx.arc(this.x, this.y, 25 * this.scale, Math.PI, Math.PI * 1.5);
+        // middle bump
+        ctx.arc(this.x + 35 * this.scale, this.y - 15 * this.scale, 30 * this.scale, Math.PI * 1.1, Math.PI * 1.9);
+        // right bump
+        ctx.arc(this.x + 75 * this.scale, this.y, 20 * this.scale, Math.PI * 1.5, Math.PI * 2);
+
+        // right tip taper
+        ctx.lineTo(this.x + 110 * this.scale, bottomY);
+        ctx.closePath();
         ctx.fill();
     }
 }
@@ -311,8 +329,7 @@ function initGame() {
         clouds.push(new Cloud(Math.random() * WIDTH));
     }
 
-    document.querySelector('#start-screen h1').style.color = 'yellow';
-    document.querySelector('#start-screen h1').innerText = 'RUNNER';
+    document.getElementById('end-msg').style.display = 'none';
 
     scoreEl.innerText = `EIDI: 0`;
     timeEl.innerText = `TIME: 60s`;
@@ -403,7 +420,7 @@ function update(dt) {
         const dist = Math.hypot(c.x - playerCenterX, c.y - playerCenterY);
         if (dist < c.radius + pw / 2 + 5) {
             c.collected = true;
-            score += 10;
+            score += 100;
             scoreEl.innerText = `EIDI: ${score}`;
             spawnParticles(c.x, c.y, 20, '#FFC000');
 
@@ -423,12 +440,14 @@ function die(message) {
     gameOverSound.play().catch(e => e);
 
     startScreen.style.display = 'flex';
-    document.querySelector('#start-screen h1').innerText = message;
+    const endMsg = document.getElementById('end-msg');
+    endMsg.style.display = 'block';
+    endMsg.innerText = message;
 
     if (message === "TIME'S UP!") {
-        document.querySelector('#start-screen h1').style.color = 'orange';
+        endMsg.style.color = 'orange';
     } else {
-        document.querySelector('#start-screen h1').style.color = '#E82C0C';
+        endMsg.style.color = '#E82C0C';
     }
 
     document.querySelector('#start-screen p').innerHTML = `You collected ${score} Eidi!<br>Press Space or Tap to try again.`;
@@ -438,10 +457,7 @@ function die(message) {
 }
 
 function drawBackground() {
-    const skyGrad = ctx.createLinearGradient(0, 0, 0, HEIGHT);
-    skyGrad.addColorStop(0, '#4B8BF5');
-    skyGrad.addColorStop(1, '#9CC9F5');
-    ctx.fillStyle = skyGrad;
+    ctx.fillStyle = '#01B4FA'; // Flat bright blue to match image
     ctx.fillRect(0, 0, WIDTH, HEIGHT);
 
     clouds.forEach(c => c.draw());
