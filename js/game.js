@@ -12,6 +12,7 @@ let GROUND_Y = HEIGHT - 40;
 // Game State
 let isPlaying = false;
 let isGameOver = false;
+let gameOverTime = 0;
 let score = 0;
 let timeLeft = 60;
 let gameSpeed = 5;
@@ -46,7 +47,9 @@ function handleJumpAction(e) {
     if (isPlaying && !isGameOver) {
         player.jump();
     } else if (isGameOver) {
-        initGame();
+        if (performance.now() - gameOverTime > 500) {
+            initGame();
+        }
     } else if (!isPlaying) {
         startBtn.click();
     }
@@ -472,6 +475,7 @@ function update(dt) {
 
 function die(message) {
     isGameOver = true;
+    gameOverTime = performance.now();
 
     // Audio Game Over
     bgMusic.pause();
