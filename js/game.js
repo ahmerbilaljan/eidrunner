@@ -323,7 +323,7 @@ function initGame() {
     isGameOver = false;
     isPlaying = true;
     timeAccumulator = 0;
-    nextPillarDist = 2700; // About 7 seconds delay
+    nextPillarDist = 1560; // About 4 seconds delay
     nextCoinDist = 200;
     groundOffset = 0;
 
@@ -496,12 +496,14 @@ function die(message) {
     spawnParticles(player.x + player.width / 2, player.y + player.height / 2, 50, '#E82C0C');
 }
 
-function drawBackground() {
+function drawSky() {
     ctx.fillStyle = '#01B4FA'; // Flat bright blue to match image
     ctx.fillRect(0, 0, WIDTH, HEIGHT);
 
     clouds.forEach(c => c.draw());
+}
 
+function drawGround() {
     ctx.fillStyle = '#6E340B';
     ctx.fillRect(0, GROUND_Y, WIDTH, HEIGHT - GROUND_Y);
 
@@ -524,9 +526,12 @@ function drawBackground() {
 function draw() {
     if (!isPlaying) return;
 
-    drawBackground();
+    drawSky();
 
     pillars.forEach(p => p.draw());
+    
+    drawGround();
+    
     coins.forEach(c => c.draw());
 
     if (!isGameOver) {
