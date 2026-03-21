@@ -334,6 +334,13 @@ function initGame() {
     scoreEl.innerText = `EIDI: 0`;
     timeEl.innerText = `TIME: 60s`;
 
+    const blinkMsg = document.getElementById('blink-msg');
+    const isMobile = window.innerWidth <= 600 || window.innerHeight <= 500 || ('ontouchstart' in window);
+    blinkMsg.innerText = isMobile ? "TAP THE SCREEN" : "PRESS SPACE";
+    blinkMsg.classList.remove('blink-anim');
+    void blinkMsg.offsetWidth; // trigger reflow
+    blinkMsg.classList.add('blink-anim');
+
     lastTime = performance.now();
     gameLoop(lastTime);
 }
