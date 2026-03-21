@@ -565,7 +565,14 @@ function resizeCanvas() {
 
     WIDTH = canvas.width;
     HEIGHT = canvas.height;
-    GROUND_Y = HEIGHT - 40;
+    
+    // Elevate ground level on mobile to make it comfortable to tap and view
+    const isMobile = window.innerWidth <= 600 || ('ontouchstart' in window) || HEIGHT > WIDTH;
+    if (isMobile) {
+        GROUND_Y = HEIGHT * 0.70; // 30% from the bottom
+    } else {
+        GROUND_Y = HEIGHT - 40; // normal desktop ground
+    }
 
     // Safety check so player doesn't fall through ground if resize happens during play
     if (player) {
