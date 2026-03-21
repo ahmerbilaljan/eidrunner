@@ -329,6 +329,8 @@ function initGame() {
         clouds.push(new Cloud(Math.random() * WIDTH));
     }
 
+    startScreen.classList.remove('is-end');
+    startScreen.style.display = 'none';
     document.getElementById('end-msg').style.display = 'none';
 
     scoreEl.innerText = `EIDI: 0`;
@@ -446,6 +448,7 @@ function die(message) {
     gameOverSound.currentTime = 0;
     gameOverSound.play().catch(e => e);
 
+    startScreen.classList.add('is-end');
     startScreen.style.display = 'flex';
     const endMsg = document.getElementById('end-msg');
     endMsg.style.display = 'block';
